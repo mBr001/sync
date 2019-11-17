@@ -53,13 +53,13 @@ class Rooms extends Component {
     return (
     <div>
       <h1>Rooms</h1>
-      <YouTube 
+      {/* <YouTube 
         videoId={'HXcSGuYUkDg'}
         onReady={this.handleOnReady}
         onPlay={this.handleOnPlay}
         onStateChange={this.handleOnStateChange} 
         onPause={this.handleOnPause}
-      />
+      /> */}
     </div>);
   }
 }

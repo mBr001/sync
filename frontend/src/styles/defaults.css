@@ -1,0 +1,89 @@
+element {
+  --light-grey: #eee;
+}
+
+body {
+  margin-right: 10px;
+  margin-left: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+em {
+  font-style: italic;
+}
+
+body,
+h1,
+h2,
+h3 {
+  font-weight: 300;
+  margin-bottom: 1em;
+}
+
+h1 { font-size: 20px; }
+h2 { font-size: 16px; margin-top: 1em; }
+
+table,
+progress {
+  width: 100%;
+}
+
+th,
+td,
+[type=text],
+textarea {
+  margin-right: 5px;
+  padding: 3px 6px;
+}
+
+th {
+  width: 10%;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+[type=text],
+textarea {
+  width: 200px;
+  padding: 5px;
+  border: 1px solid darken(var(--light-grey), 20);
+  border-radius: 3px;
+  outline: 0;
+}
+
+[type=text],
+textarea:focus {
+  border-color: darken(var(--light-grey), 30);
+  box-shadow: 0 0 5px var(--light-grey);
+}
+
+
+textarea {
+  height: 100px;
+  font-family: monospace;
+  vertical-align: bottom;
+}
+
+button {
+  margin: 3px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 3px;
+  outline: 0;
+  background-color: var(--light-grey);
+}
+
+button:focus {
+  background: darken(var(--light-grey), 5);
+}
+
+button:hover {
+  background: darken(var(--light-grey), 10);
+}
+
+button:active { 
+  background: darken(var(--light-grey), 15); 
+}

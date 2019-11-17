@@ -1,5 +1,6 @@
 import React  from 'react';
 import YouTube from 'react-youtube';
+import ReactPlayer from 'react-player';
 import { ClientEvent } from '../api/constants';
 import io from "socket.io-client";
 import queryString from 'query-string';
@@ -9,8 +10,20 @@ class Room extends React.Component<{location: any}> {
   state = {
     socket : io.connect(ClientEvent.SERVER_URL),
     validRoomId: false,
-    loaded: false,
+    finishedLoading: false,
     roomId: '',
+    url: null,
+    pip: false,
+    playing: true,
+    controls: false,
+    light: false,
+    volume: 0.8,
+    muted: false,
+    played: 0,
+    loaded: 0,
+    duration: 0,
+    playbackRate: 1.0,
+    loop: false
   }
 
   async componentDidMount(){
@@ -19,30 +32,30 @@ class Room extends React.Component<{location: any}> {
     let res = await axios.get("http://localhost:8080/rooms?roomid=" + roomId);
     if (res && res.data){
       this.setState({
-        loaded: true,
+        finishedLoading: true,
         validRoomId: true,
         roomId: params['roomid'],
       })
     }
     else {
       this.setState({
-        loaded: true,
+        finsihedLoading: true,
       })
     }
   }
 
-  handleOnPause = (event: { target: any, data: number }) => {
-    const socket=this.state.socket;
-    socket.emit(ClientEvent.PAUSE, {data: "Pause!"});
+  handlePause = () => {
+    console.log("Paused");
+    this.state.socket.emit(ClientEvent.PAUSE, {data: "Pause!"});
   }
 
-  handleOnPlay = (event: { target: any, data: number }) => {
-     const socket = this.state.socket;
-     socket.emit(ClientEvent.PLAY, {data: "Play!"});
+  handlePlay = () => {
+    console.log("Playing");
+    this.state.socket.emit(ClientEvent.PLAY, {data: "Play!"});
   }
 
-  handleOnStateChange = (event: { target: any }) => {
-    console.log('_onStateChange called');
+  handleSeek = (seconds: number) => {
+    console.log('Seeking to ' + seconds + ' seconds.');
   }
 
   //When the video player is ready, add listeners for play, pause etc
@@ -62,20 +75,20 @@ class Room extends React.Component<{location: any}> {
   }
 
   render() {
-    let videoPlayer = this.state.loaded && this.state.validRoomId 
+    let videoPlayer = this.state.finishedLoading && this.state.validRoomId 
     ? <React.Fragment>
         <h1>Room {this.state.roomId}</h1>
-        <YouTube 
-          videoId={'HXcSGuYUkDg'}
-          onReady={this.handleOnReady}
-          onPlay={this.handleOnPlay}
-          onStateChange={this.handleOnStateChange} 
-          onPause={this.handleOnPause}
+        <ReactPlayer 
+          controls
+          url={'https://vimeo.com/56282283'} 
+          onPlay={this.handlePlay}
+          onPause={this.handlePause}
+          onSeek={this.handleSeek}
         />
       </React.Fragment> 
     : null;
 
-    let invalidRoomId = this.state.loaded && !this.state.validRoomId 
+    let invalidRoomId = this.state.finishedLoading && !this.state.validRoomId 
     ? <h1>Invalid room id :(</h1> 
     : null;
 
@@ -87,5 +100,30 @@ class Room extends React.Component<{location: any}> {
     );
   }
 }
+
+// ref={this.ref}
+// className='react-player'
+// width='100%'
+// height='100%'
+// url={'https://vimeo.com/56282283'}
+// pip={false}
+// playing={playing}
+// controls={controls}
+// light={light}
+// playbackRate={playbackRate}
+// volume={volume}
+// muted={muted}
+// onReady={() => console.log('onReady')}
+// onStart={() => console.log('onStart')}
+// onPlay={this.handlePlay}
+// onEnablePIP={this.handleEnablePIP}
+// onDisablePIP={this.handleDisablePIP}
+// onPause={this.handlePause}
+// onBuffer={() => console.log('onBuffer')}
+// onSeek={e => console.log('onSeek', e)}
+// onEnded={this.handleEnded}
+// onError={e => console.log('onError', e)}
+// onProgress={this.handleProgress}
+// onDuration={this.handleDuration}
 
 export default Room;
