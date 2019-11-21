@@ -6,6 +6,7 @@ import queryString from 'query-string';
 import axios from 'axios';
 import { hot } from 'react-hot-loader'
 import screenfull from 'screenfull'
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import '../styles/reset.css'
 import '../styles/defaults.css'
@@ -268,7 +269,8 @@ class App extends Component {
               </tr>
               <tr>
                 <th>Loaded</th>
-                <td><progress max={1} value={loaded} /></td>
+                {/* <td><progress max={1} value={loaded} /></td> */}
+                <LinearProgress variant="determinate" value={loaded * 100}/>
               </tr>
             </tbody>
           </table>
