@@ -1,10 +1,14 @@
-import React  from 'react';
+import React from 'react';
 import YouTube from 'react-youtube';
 import ReactPlayer from 'react-player';
 import { ClientEvent } from '../api/constants';
 import io from "socket.io-client";
 import queryString from 'query-string';
 import axios from 'axios';
+
+interface DataFromServer {
+  msg: string,
+}
 
 class Room extends React.Component<{location: any}> {
   state = {
@@ -27,6 +31,10 @@ class Room extends React.Component<{location: any}> {
   }
 
   async componentDidMount(){
+    const socket = this.state.socket;
+    socket.on(ClientEvent.CONNECT, () => {
+       socket.emit(ClientEvent.JOIN_ROOM, roomId);
+     });
     let params = queryString.parse(this.props.location.search);
     let roomId = params['roomid'];
     let res = await axios.get("http://localhost:8080/rooms?roomid=" + roomId);
@@ -44,34 +52,41 @@ class Room extends React.Component<{location: any}> {
     }
   }
 
-  handlePause = () => {
-    console.log("Paused");
-    this.state.socket.emit(ClientEvent.PAUSE, {data: "Pause!"});
+  handleOnPause = () => {
+    const socket=this.state.socket;
+    const roomId = this.state.roomId;
+    socket.emit(ClientEvent.PAUSE + roomId, {data: "Pause!"});
   }
 
-  handlePlay = () => {
-    console.log("Playing");
-    this.state.socket.emit(ClientEvent.PLAY, {data: "Play!"});
+  handleOnPlay = () => {
+     const socket = this.state.socket;
+     const roomId = this.state.roomId;
+     socket.emit(ClientEvent.PLAY + roomId, {data: "Play!"});
   }
 
-  handleSeek = (seconds: number) => {
-    console.log('Seeking to ' + seconds + ' seconds.');
+  handleOnStateChange = (event: { target: any }) => {
+    console.log('State has changed');
   }
 
   //When the video player is ready, add listeners for play, pause etc
   handleOnReady = (event: { target: any; }) => {
     const socket=this.state.socket;
     const player = event.target;
+    const roomId = this.state.roomId;
 
-    socket.on(ClientEvent.PLAY, (dataFromServer: any) => {
-      console.log(dataFromServer);
+    socket.on(ClientEvent.PLAY + roomId, (dataFromServer: DataFromServer) => {
+      console.log(dataFromServer.msg);
       player.playVideo();
     });
 
-    socket.on(ClientEvent.PAUSE, (dataFromServer: any) => {
-      console.log(dataFromServer);
+    socket.on(ClientEvent.PAUSE + roomId, (dataFromServer: DataFromServer) => {
+      console.log(dataFromServer.msg);
       player.pauseVideo();
     });
+
+    socket.on(ClientEvent.MESSAGE, (dataFromServer: DataFromServer) => {
+      console.log( dataFromServer.msg);
+    })
   }
 
   render() {
@@ -81,9 +96,8 @@ class Room extends React.Component<{location: any}> {
         <ReactPlayer 
           controls
           url={'https://vimeo.com/56282283'} 
-          onPlay={this.handlePlay}
-          onPause={this.handlePause}
-          onSeek={this.handleSeek}
+          onPlay={this.handleOnPlay}
+          onPause={this.handleOnPause}
         />
       </React.Fragment> 
     : null;
