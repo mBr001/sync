@@ -26,14 +26,19 @@ io.on(ServerEvent.CONNECT, (socket) => {
 
   socket.on(ServerEvent.JOIN_ROOM, (roomId) => {
     socket.join(roomId, () => {
-      io.to(roomId).emit(ServerEvent.MESSAGE, {msg: "A new user has joined the room!"});
+      io.to(roomId).emit(ServerEvent.MESSAGE, {msg: "A new user has joined the room!", payload: null});
     });
-    socket.on(ServerEvent.PLAY + roomId, ()=> {
-      io.to(roomId).emit(ServerEvent.PLAY + roomId, {msg: 'Play!'});
+    socket.on(ServerEvent.PLAY + roomId, () => {
+      io.to(roomId).emit(ServerEvent.PLAY + roomId, {msg: 'Play!', payload: null});
     })
 
     socket.on(ServerEvent.PAUSE + roomId, () => {
-      io.to(roomId).emit(ServerEvent.PAUSE + roomId, {msg: 'Pause!'});
+      io.to(roomId).emit(ServerEvent.PAUSE + roomId, {msg: 'Pause!', payload: null});
+    });
+
+    socket.on(ServerEvent.SEEK + roomId, (data: any) => {
+      const seconds = data.seconds;
+      io.to(roomId).emit(ServerEvent.SEEK + roomId, {msg: 'Seeking to ' + seconds + ' seconds.', payload: seconds})
     });
   });
 });

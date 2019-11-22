@@ -7,5 +7,6 @@ export enum ClientEvent {
   PLAY_ALL = 'playAll',
   PAUSE = 'pause',
   PAUSE_ALL = 'pauseAll',
+  SEEK = 'seek',
   JOIN_ROOM = 'joinRoom',
 }

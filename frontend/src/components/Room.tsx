@@ -1,12 +1,13 @@
 import React from 'react';
-import YouTube from 'react-youtube';
 import { ClientEvent } from '../api/constants';
 import io from "socket.io-client";
 import queryString from 'query-string';
 import axios from 'axios';
+import VideoPlayer from './VideoPlayer.jsx';
 
 interface DataFromServer {
   msg: string,
+  payload: null | number,
 }
 
 class Room extends React.Component<{location: any}> {
@@ -39,53 +40,14 @@ class Room extends React.Component<{location: any}> {
     }
   }
 
-  handleOnPause = (event: { target: any, data: number }) => {
-    const socket=this.state.socket;
-    const roomId = this.state.roomId;
-    socket.emit(ClientEvent.PAUSE + roomId, {data: "Pause!"});
-  }
-
-  handleOnPlay = (event: { target: any, data: number }) => {
-     const socket = this.state.socket;
-     const roomId = this.state.roomId;
-     socket.emit(ClientEvent.PLAY + roomId, {data: "Play!"});
-  }
-
-  handleOnStateChange = (event: { target: any }) => {
-    console.log('State has changed');
-  }
-
-  //When the video player is ready, add listeners for play, pause etc
-  handleOnReady = (event: { target: any; }) => {
-    const socket=this.state.socket;
-    const player = event.target;
-    const roomId = this.state.roomId;
-
-    socket.on(ClientEvent.PLAY + roomId, (dataFromServer: DataFromServer) => {
-      console.log(dataFromServer.msg);
-      player.playVideo();
-    });
-
-    socket.on(ClientEvent.PAUSE + roomId, (dataFromServer: DataFromServer) => {
-      console.log(dataFromServer.msg);
-      player.pauseVideo();
-    });
-
-    socket.on(ClientEvent.MESSAGE, (dataFromServer: DataFromServer) => {
-      console.log( dataFromServer.msg);
-    })
-  }
-
   render() {
     let videoPlayer = this.state.loaded && this.state.validRoomId 
     ? <React.Fragment>
         <h1>Room {this.state.roomId}</h1>
-        <YouTube 
-          videoId={'HXcSGuYUkDg'}
-          onReady={this.handleOnReady}
-          onPlay={this.handleOnPlay}
-          onStateChange={this.handleOnStateChange} 
-          onPause={this.handleOnPause}
+        <VideoPlayer 
+          socket = {this.state.socket} 
+          roomId = {this.state.roomId}
+          url = {"https://www.youtube.com/watch?v=LCkneiz2JPo"}
         />
       </React.Fragment> 
     : null;

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import YouTube from 'react-youtube';
 import { ClientEvent } from '../api/constants';
 import io from "socket.io-client";
 
@@ -53,13 +52,6 @@ class Rooms extends Component {
     return (
     <div>
       <h1>Rooms</h1>
-      <YouTube 
-        videoId={'HXcSGuYUkDg'}
-        onReady={this.handleOnReady}
-        onPlay={this.handleOnPlay}
-        onStateChange={this.handleOnStateChange} 
-        onPause={this.handleOnPause}
-      />
     </div>);
   }
 }
