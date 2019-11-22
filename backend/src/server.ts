@@ -29,10 +29,12 @@ io.on(ServerEvent.CONNECT, (socket) => {
       io.to(roomId).emit(ServerEvent.MESSAGE, {msg: "A new user has joined the room!", payload: null});
     });
     socket.on(ServerEvent.PLAY + roomId, () => {
+      console.log("we hit the back end play!");
       io.to(roomId).emit(ServerEvent.PLAY + roomId, {msg: 'Play!', payload: null});
     })
 
     socket.on(ServerEvent.PAUSE + roomId, () => {
+      console.log("we hit the back end pause!");
       io.to(roomId).emit(ServerEvent.PAUSE + roomId, {msg: 'Pause!', payload: null});
     });
 

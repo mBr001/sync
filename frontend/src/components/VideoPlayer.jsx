@@ -10,7 +10,7 @@ class VideoPlayer extends Component {
   state = {
     url: this.props.url,
     pip: false,
-    playing: true,
+    playing: false,
     controls: false,
     light: false,
     volume: 0.8,
@@ -72,11 +72,11 @@ class VideoPlayer extends Component {
   // }
 
   handlePlay = () => {
-    console.log('onPlay');
+    // console.log('onPlay');
     this.setState({ playing: true });
     const socket = this.props.socket;
     const roomId = this.props.roomId;
-    socket.emit(ClientEvent.PLAY + roomId, {data: "Play!"});
+    socket.emit(ClientEvent.PLAY + roomId);
   }
 
   handlePause = () => {
@@ -84,26 +84,38 @@ class VideoPlayer extends Component {
     this.setState({ playing: false });
     const socket = this.props.socket;
     const roomId = this.props.roomId;
-    socket.emit(ClientEvent.PAUSE + roomId, {data: "Pause!"});
+    socket.emit(ClientEvent.PAUSE + roomId);
   }
 
+  // handleSeekChange = e => {
+  //   const seconds = parseFloat(e.target.value);
+  //   this.setState({ played: seconds });
+  //   this.player.seekTo(seconds, 'seconds');
+  //   // TODO: add the socket function call for seeking
+  // }
+
+  // handleSeekMouseUp = e => {
+  //   this.setState({ seeking: false });
+  //   // let seconds = parseFloat(e.target.value);
+  //   // this.player.seekTo(seconds, 'seconds');
+  //   // const socket = this.props.socket;
+  //   // const roomId = this.props.roomId;
+  //   // socket.emit(ClientEvent.SEEK + roomId, {seconds})
+  // }
+
   handleSeekMouseDown = e => {
-    console.log('onSeek');
-    this.setState({ seeking: true });
+    this.setState({ seeking: true })
   }
 
   handleSeekChange = e => {
-    this.setState({ played: parseFloat(e.target.value) })
-    // TODO: add the socket function call for seeking
+    const percent = parseFloat(e.target.value);
+    this.setState({ played: percent });
   }
 
   handleSeekMouseUp = e => {
     this.setState({ seeking: false });
-    let seconds = parseFloat(e.target.value);
-    this.player.seekTo(seconds, 'seconds');
-    const socket = this.props.socket;
-    const roomId = this.props.roomId;
-    socket.emit(ClientEvent.SEEK + roomId, {seconds})
+    const percent = parseFloat(e.target.value);
+    this.player.seekTo(percent, 'fraction');
   }
 
   handleProgress = state => {
@@ -162,7 +174,6 @@ class VideoPlayer extends Component {
     return (
       <div className='app'>
         <section className='section'>
-          <h1>ReactPlayer Demo</h1>
           <input ref={input => { this.urlInput = input }} type='text' placeholder='Enter URL' />
           <button onClick={() => this.setState({ url: this.urlInput.value })}>Load</button>
         </section>
@@ -263,8 +274,7 @@ class VideoPlayer extends Component {
               </tr>
               <tr>
                 <th>Loaded</th>
-                {/* <td><progress max={1} value={loaded} /></td> */}
-                <LinearProgress variant="determinate" value={loaded * 100}/>
+                <td><progress max={1} value={loaded} /></td>
               </tr>
             </tbody>
           </table>
